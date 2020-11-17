@@ -2,4 +2,4 @@
 
 Group Member: Adam Hoerger, Neel Katuri, BJ Kim
 
-Our project will be focusing on predicting Fantasy Football perforances given previous weeks' data.
+Our project will be focusing on predicting Fantasy Football performances given previous weeks' data.
