@@ -48,4 +48,4 @@ class DataHandler():
         else:
             self.data = data
             info, X, y = self.data.iloc[:, :5], self.data.iloc[:, 18:], self.data.iloc[:, 5:18]
-            self.info_train, self.info_test, self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(names, X, y, test_size = test_size)
+            self.info_train, self.info_test, self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(info, X, y, test_size = test_size)
