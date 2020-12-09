@@ -99,12 +99,12 @@ for pos in dh.data.keys():
     year_df = dh.data[pos]
     year_df = year_df.loc[year_df['Year'] == 2019]
     ppr_score = np.zeros(year_df.shape[0])
-    year_df.loc['PPR'] = ppr_score
+    year_df['PPR'] = ppr_score
     year_df = year_df 
 
     # Adding the PPR scores of each player
     for i, stat in enumerate(stats):
-        year_df.loc['PPR'] += year_df[stat] * scoring[i]
+        year_df['PPR'] += year_df[stat] * scoring[i]
 
     # Go through each week for the specified position to find best performing player
     # Note: We only get the top 1 quarterback as you're only allowed one per team
