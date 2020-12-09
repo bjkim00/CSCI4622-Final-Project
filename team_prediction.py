@@ -12,16 +12,21 @@ from linModel import linModel
 scoring = [0.04, 4, -2, 0, 0, 0, 0.1, 6, 1, 0, 0.1, 6, -2] # These are the standard PPR scoring weights
 stats = ['PassingYds', 'PassingTD', 'Int', 'PassingAtt', 'Cmp', \
                       'RushingAtt', 'RushingYds', 'RushingTD', 'Rec', 'Tgt', 'ReceivingYds', 'ReceivingTD', 'FL'] # These are the stats we care about
-dh = DataHandler(beg=1999, end = 2018, split_by_pos=True, offset=24, ignore_na = False, fill_mean = True, include_all=True)
 
 best_alpha = 0.12 # This value was determined from model_optimization.py
-best_offset_linear = best_offset_lstm = 19 # This value was determined from model_optimization.py
+best_offset_linear = 20 # This value was determined from model_optimization.py
+best_offset_lstm = 19 # This value was determined from model_optimization.py, should line up with desired model file
+
+dh = DataHandler(beg=1999, end = 2018, split_by_pos=True, offset=max(best_offset_linear, best_offset_lstm), ignore_na = False, fill_mean = True, include_all=True)
+
+# train new linear model, excluding 2019
 lin = {}
 for pos in dh.X_test.keys():
     lin[pos] = linModel(alpha = best_alpha)
     lin[pos].train(dh.X_test[pos].iloc[:, :best_offset_linear*13], dh.y_test[pos])
-                      
-dh = DataHandler(beg=1999, end = 2019, split_by_pos=True, offset=24, ignore_na = False, fill_mean = True, include_all=True)
+
+
+dh = DataHandler(beg=1999, end = 2019, split_by_pos=True, offset=max(best_offset_linear, best_offset_lstm), ignore_na = False, fill_mean = True, include_all=True)
 test_team = {'QB': ['Patrick Mahomes'], 
              'RB': ['Alvin Kamara', 'Christian McCaffrey', 'Saquon Barkley'], 
              'WR': ['Michael Thomas', 'Travis Kelce', 'Julio Jones']}
@@ -33,18 +38,19 @@ test_team = {'QB': ['Patrick Mahomes'],
 test_team_week = {}
 total_weeks = np.zeros(17)
 
-pred = predModel(offset = 16, epochs = 1)
+pred = predModel()
 for pos in test_team.keys():
     ind = dh.info_test[pos]['Year'] == 2019
-    temp_info = dh.info_test[pos][ind].iloc[:, :best_offset_lstm*13]
-    temp_X = dh.X_test[pos][ind].iloc[:, :best_offset_lstm*13]
-    temp_y = dh.y_test[pos][ind].iloc[:, :best_offset_lstm*13]
+    temp_info = dh.info_test[pos][ind].iloc[:, ]
+    temp_X_lstm = dh.X_test[pos][ind].iloc[:, :best_offset_lstm*13]
+    temp_X_linear = dh.X_test[pos][ind].iloc[:, :best_offset_linear*13]
+    temp_y = dh.y_test[pos][ind].iloc[:, ]
     pred.load_model("./models/" + pos + str(best_offset_lstm) + "-32-100")
     for player in test_team[pos]:
-        info_player, y_pred_stats, info_indices = lin[pos].predict_player(temp_info, temp_X, player, ret_info=True)
+        info_player, y_pred_stats, info_indices = lin[pos].predict_player(temp_info, temp_X_linear, player, ret_info=True)
         y_linear_score = np.dot(y_pred_stats, np.asarray(scoring).T)
         
-        info_player, y_pred_stats, info_indices = pred.predict_player(temp_info, temp_X, player, ret_info=True)
+        info_player, y_pred_stats, info_indices = pred.predict_player(temp_info, temp_X_lstm, player, ret_info=True)
         y_lstm_score = np.dot(y_pred_stats, np.asarray(scoring).T)
         
         actual_score = np.dot(np.asarray(temp_y.loc[info_indices]), np.asarray(scoring).T)
@@ -93,12 +99,12 @@ for pos in dh.data.keys():
     year_df = dh.data[pos]
     year_df = year_df.loc[year_df['Year'] == 2019]
     ppr_score = np.zeros(year_df.shape[0])
-    year_df['PPR'] = ppr_score
+    year_df.loc['PPR'] = ppr_score
     year_df = year_df 
 
     # Adding the PPR scores of each player
     for i, stat in enumerate(stats):
-        year_df['PPR'] += year_df[stat] * scoring[i]
+        year_df.loc['PPR'] += year_df[stat] * scoring[i]
 
     # Go through each week for the specified position to find best performing player
     # Note: We only get the top 1 quarterback as you're only allowed one per team
