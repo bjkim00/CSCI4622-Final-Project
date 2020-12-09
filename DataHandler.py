@@ -44,7 +44,6 @@ class DataHandler():
             self.all_data = data
             self.data = {}
             self.info_train, self.info_test, self.X_train, self.X_test, self.y_train, self.y_test = {}, {}, {}, {}, {}, {}
-            # self.X_train_normal, self.X_test_normal, self.y_train_normal, self.y_test_normal = {}, {}, {}, {}
             for pos in specified_data:
                 if pos == 'WR':
                     self.data[pos] = data[(data['Pos'] == pos) | (data['Pos'] == 'TE')]
@@ -57,10 +56,7 @@ class DataHandler():
                     self.info_test[pos], self.X_test[pos], self.y_test[pos] = info, X, y
                 else:
                     self.info_train[pos], self.info_test[pos], self.X_train[pos], self.X_test[pos], self.y_train[pos], self.y_test[pos] = train_test_split(info, X, y, test_size = float(test_size))
-                # self.X_train_normal[pos] = X_scaler.fit_transform(self.X_train[pos])
-                # self.X_test_normal[pos] = X_scaler.transform(self.X_test[pos])
-                # self.y_train_normal[pos] = y_scaler.fit_transform(self.y_train[pos])
-                # self.y_test_normal[pos] = y_scaler.transform(self.y_test[pos])
+                
     
         else:
             self.data = data
