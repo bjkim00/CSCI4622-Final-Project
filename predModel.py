@@ -49,7 +49,6 @@ class predModel:
     
     def predict_player(self, info_test, X_test, player_name, pos = None, ret_info = True):
         if pos is None:
-            # print(info_test[info_test['Player'] == player_name])
             info_indices = info_test[info_test['Player'] == player_name].sort_index(ascending=True).index
         else:
             info_indices = info_test[pos][info_test[pos]['Player'] == player_name].sort_index(ascending=True).index
@@ -58,7 +57,6 @@ class predModel:
         X_test_normal = self.reshape_data(X_test_normal)
         
         if ret_info:
-            # print(self.model.predict(X_test_normal))
             return info_test.loc[info_indices], self.y_scaler.inverse_transform(self.model.predict(X_test_normal)), info_indices
         else:
             return self.y_scaler.inverse_transform(self.model.predict(X_test_normal)), info_indices
