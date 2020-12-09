@@ -15,7 +15,7 @@ stats = ['PassingYds', 'PassingTD', 'Int', 'PassingAtt', 'Cmp', \
 dh = DataHandler(beg=1999, end = 2018, split_by_pos=True, offset=24, ignore_na = False, fill_mean = True, include_all=True)
 
 best_alpha = 0.12 # This value was determined from model_optimization.py
-best_offset_linear = 19 # This value was determined from model_optimization.py
+best_offset_linear = best_offset_lstm = 19 # This value was determined from model_optimization.py
 lin = {}
 for pos in dh.X_test.keys():
     lin[pos] = linModel(alpha = best_alpha)
@@ -33,7 +33,6 @@ test_team = {'QB': ['Patrick Mahomes'],
 test_team_week = {}
 total_weeks = np.zeros(17)
 
-best_offset_lstm = 19 # This was determined from model_optimization.py
 pred = predModel(offset = 16, epochs = 1)
 for pos in test_team.keys():
     ind = dh.info_test[pos]['Year'] == 2019
