@@ -9,3 +9,17 @@ Fantasy Football is something many people do every year. The system of adjusting
 ## Dataset
 
 The dataset we're using the weekly dataset from https://www.fantasyfootballdatapros.com/csv_files. Due to the limitations presented by the dataset, we only have access for weekly data from 1999 onward, but it shouldn't be a big issue as most players from back then or before then are retired.
+
+## Dependencies
+* Pandas
+* Numpy
+* Matplotlib
+* Keras LSTM Layer
+* Keras Dense Layer
+* Keras Sequential Model
+* Sklearn
+* Pickle
+
+## How To Run
+Once the repo is cloned, you can choose what team to predict scores for by entering names in the `test_team` variable in the `team_prediction.py` file. Then, in the same location as the cloned repo, running `python team_prediction.py` will provide the predicted scores for those players.
+
